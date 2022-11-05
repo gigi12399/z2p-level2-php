@@ -7,6 +7,15 @@
 
     $query = new Queries();
 
+    date_default_timezone_set('Asia/Yangon');
+    $today_date = date('Y-m-d');
+    //echo $today_date;
+
+    $income = $query->select('incomes', '*', null, "DATE(created_at)='$today_date'", null, '1');
+    //var_dump($income);
+    
+    //var_dump($income_date);
+
     if($_SERVER['REQUEST_METHOD'] == 'POST'){
         $total_income = $_POST['total_income'];
         $expand_name = $_POST['expand_name'];
@@ -41,10 +50,17 @@
                     $query->store('employee_expands', $data);
                 };
             }
+            $income = $query->select('incomes', '*', null, "DATE(created_at)='$today_date'", null, '1');
+            $income_date_str = strtotime($income['created_at']);
+            $income_date = date("Y-m-d", $income_date_str);
+            header("location:view-data.php?income_date=$income_date");
         } catch (PDOException $e) {
            echo $e->getMessage();
         }
     }
+
+    if($income == false){
+
 ?>
 
 
@@ -57,8 +73,8 @@
                 <div class="mt-5">
                     <form action="#" method="post" class="form">
                         <div class="mb-3">
-                            <label for="income" class="form-label">စုစုပေါင်း‌၀င်ငွေ</label>
-                            <input type="number" id="total_income" name="total_income" class="form-control" placeholder="စုစုပေါင်း‌၀င်ငွေ" required>
+                            <label for="income" class="form-label">စုစုပေါင်း‌ဝင်ငွေ</label>
+                            <input type="number" id="total_income" name="total_income" class="form-control" placeholder="စုစုပေါင်း‌ဝင်ငွေ" required>
                         </div>
                         <div class="mb-3">
                             <div class="row">
@@ -95,7 +111,7 @@
                                 <select class="form-select" name="employee_expand_name[]">
                                     <option selected>ရွေးချယ်ပါ....</option>
                                     <?php 
-                                        $employees = $query->select('employees');
+                                        $employees = $query->select('employees', '*', null, "deleted_at IS NULL");
                                         //var_dump($employees);
                                         foreach ($employees as $employee){
                                     ?>
@@ -124,5 +140,12 @@
     </div>
 
 <?php 
+    }
+    else{
+        $income_date_str = strtotime($income['created_at']);
+        //echo $income_date_str;
+        $income_date = date("Y-m-d", $income_date_str);
+        header("location:view-data.php?income_date=$income_date");
+    }
     require "includes/footer.php";
 ?>

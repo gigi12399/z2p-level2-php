@@ -41,6 +41,27 @@
                             </div>`;
                     $('#employee_row').append(employee_row);
                 });
+                $('.detail').on('click', function(){
+                    let employee_id = $(this).data('id');
+                    let employee_name = $(this).data('name');
+                    let employee_dob = $(this).data('dob');
+                    let employee_address = $(this).data('address');
+                    let employee_nrc = $(this).data('nrc');
+                    let employee_salary = $(this).data('salary');
+                    let employee_description = $(this).data('description');
+                    let employee_used_salary = $(this).data('used');
+                    let employee_net_income = employee_salary - employee_used_salary;
+                    console.log(employee_id, employee_name,employee_dob, employee_address, employee_nrc, employee_salary, employee_description, employee_used_salary);
+                    $('#name').text(employee_name);
+                    $('#dob').text(employee_dob);
+                    $('#address').text(employee_address);
+                    $('#nrc').text(employee_nrc);
+                    $('#description').text(employee_description);
+                    $('#salary').text(employee_salary + " ကျပ်");
+                    $('#expand_salary').text(employee_used_salary + " ကျပ်");
+                    $('#net_salary').text(employee_net_income + " ကျပ်");
+                
+                });
             });
         </script>
     </body>

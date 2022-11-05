@@ -10,7 +10,7 @@
         public function select($table,$row="*", $join=null, $where=null, $order=null, $limit=null){
             $sql = "SELECT $row FROM $table";
             if($join != null){
-                $sql .= " JOIN $join";
+                $sql .= " INNER JOIN $join";
             }
             if($where != null){
                 $sql .= " WHERE $where";
@@ -23,7 +23,12 @@
             }
             $stmt = $this->pdo->prepare($sql); // delivered sql
             $stmt->execute(); // to work with data
-            $result = $stmt->fetchAll(); // fetchAll -> to get data as a array
+            if($limit == '1'){
+                $result = $stmt->fetch(PDO::FETCH_ASSOC);
+            }else{
+                $result = $stmt->fetchAll(); // fetchAll -> to get data as a array
+            }
+            
             return $result;
         }
 
@@ -31,13 +36,29 @@
             $table_columns = implode(',', array_keys($data));
             //echo $table_columns;
             $sql = "INSERT INTO $table($table_columns) VALUES(:".implode(', :', array_keys($data)).")";
-            //echo $sql;
+            echo $sql;
             $stmt = $this->pdo->prepare($sql);
             foreach ($data as $key=> &$d) {
-                //echo $key;
-                //echo $d;
                 $stmt->bindParam(":$key", $d, PDO::PARAM_STR);
             };
+            $stmt->execute();
+        }
+
+        public function update($table, $data, $where){
+
+            $args = [];
+            foreach ($data as $key=>$value) {
+                $args[] = "$key = '$value'";
+            };
+
+            $sql = "UPDATE $table SET ".implode(',', $args)." WHERE $where";
+            $stmt = $this->pdo->prepare($sql);
+            $stmt->execute();
+        }
+
+        public function delete($table, $where){
+            $sql = "DELETE FROM $table WHERE $where";
+            $stmt = $this->pdo->prepare($sql);
             $stmt->execute();
         }
 
